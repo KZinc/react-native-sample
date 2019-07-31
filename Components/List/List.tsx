@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
-import {View, Text, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import EmptyList from "./EmptyList/EmptyList";
 import {request, storage, StorageActions} from "./loaderHelper";
 
@@ -131,6 +131,8 @@ export default class List extends Component<{}, ListStateInterface> {
         return (
             this.state.listItems.length ?
                 <View>
+
+
                     {this.renderHeader()}
                     <FlatList
                         style={styles.container}
