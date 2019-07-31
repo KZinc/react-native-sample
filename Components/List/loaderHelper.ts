@@ -1,4 +1,4 @@
-import {AsyncStorage} from "react-native";
+//import {AsyncStorage} from "react-native";
 
 export function request(page: number){
     const url = 'https://jsonplaceholder.typicode.com/posts?_limit=10&_page='+page;
@@ -18,15 +18,15 @@ export enum StorageActions {
 }
 
 export function storage(action: StorageActions, key:string, value:any = null){
-    switch(action){
-        case StorageActions.SAVE:
-             AsyncStorage.setItem(key, value).then();
-             break;
-        case StorageActions.DELETE:
-            AsyncStorage.removeItem(key).then();
-            break;
-    }
+    // switch(action){
+    //     case StorageActions.SAVE:
+    //          AsyncStorage.setItem(key, value).then();
+    //          break;
+    //     case StorageActions.DELETE:
+    //         AsyncStorage.removeItem(key).then();
+    //         break;
+    // }
 }
 export function storageGet(key:string){
-    return AsyncStorage.getItem(key);
+    //return AsyncStorage.getItem(key);
 }

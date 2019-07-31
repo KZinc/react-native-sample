@@ -1,9 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 import {View, Text, ActivityIndicator, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
-import CheckBox from 'react-native-checkbox';
 import EmptyList from "./EmptyList/EmptyList";
-import {request, storage, StorageActions, storageGet} from "./loaderHelper";
+import {request, storage, StorageActions} from "./loaderHelper";
 
 interface ListStateInterface {
     loading: boolean,
@@ -45,13 +44,13 @@ export default class List extends Component<{}, ListStateInterface> {
         }
     }
     getItemsFromStorage(){
-        if(this.state.saveDataToStorage){
-            storageGet( 'list').then((result)=>{
-                
-                console.warn('result', result);
-                
-            });
-        }
+        // if(this.state.saveDataToStorage){
+        //     storageGet( 'list').then((result)=>{
+        //
+        //         console.warn('result', result);
+        //
+        //     });
+        // }
     }
     clearStorage(){
         if(!this.state.saveDataToStorage){
