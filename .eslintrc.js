@@ -34,6 +34,7 @@ module.exports = {
     "react/jsx-one-expression-per-line": [0],
     "prettier/prettier": [0],
     "import/no-unresolved":[0],
-    "import/extensions": [0]
+    "import/extensions": [0],
+    "react-native-a11y/has-accessibility-props": [0],
   },
 };
