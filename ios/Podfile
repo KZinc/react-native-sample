@@ -77,6 +77,12 @@ target 'coronaApp' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
+  pod 'react-native-video', :path => '../node_modules/react-native-video'
+
+  pod 'RNPlayAudio', :path => '../node_modules/react-native-play-audio'
+
   target 'coronaAppTests' do
     inherit! :complete
     # Pods for testing

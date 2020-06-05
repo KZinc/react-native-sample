@@ -1,109 +1,58 @@
-import React, { Component, ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
-  FlatList,
-  Text,
-  View,
-  TextInput,
 } from 'react-native';
-import Card from './components/Card/Card';
-import Colors from './helpers/assets/Colors';
-import getData, { CovidData } from './helpers/getDataRequest.helper';
+import Sound from 'react-native-sound';
+import Playback from './components/Playback/Playback';
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    backgroundColor: Colors.background,
-    borderWidth: 2,
-    borderColor: Colors.borderAccent,
-    borderRadius: 10,
-    fontWeight: 'bold',
-    padding: 10,
-    margin: 10,
-    fontSize: 16,
-  },
-  input: {
-    height: 40,
-    flex: 1,
-    borderRadius: 10,
-    backgroundColor: Colors.background,
-    borderWidth: 2,
-    borderColor: Colors.borderAccent,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
 });
 
-class App extends Component {
-  state = {
-    data: [],
-    loading: true,
-    search: '',
-  };
-
-  componentDidMount(): void {
-    this.getData();
-  }
-
-  getData = async (): Promise<void> => {
-    const { loading } = this.state;
-    if (!loading) this.setState({ loading: true });
-    getData().then((data: CovidData[]) => {
-      this.setState({ data, loading: false });
-    }).catch(() => this.setState({ loading: false }));
-  }
-
-  renderItem = ({
-    screenshot, state, stateShortcut, totalTests,
-  }: CovidData): ReactElement => (
-    <Card
-      screenshot={screenshot}
-      stateShortcut={stateShortcut}
-      state={state}
-      totalTests={totalTests}
-    />
-  )
-
-  render(): ReactElement {
-    const {
-      data, loading, search,
-    } = this.state;
-    const filteredData = data.filter((item: CovidData) => !search
-    || item.state.toLowerCase().includes(search.toLowerCase()));
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.header}> Актуальная информация о коронавирусной инфекции в США</Text>
-        <FlatList
-          data={filteredData}
-          refreshing={loading}
-          onRefresh={() => this.getData()}
-          renderItem={({ item }: { item: CovidData }) => this.renderItem(item)}
-          keyExtractor={(item: CovidData) => item.state}
-        />
-        <View style={styles.inputContainer}>
-          <View
-            style={styles.inputContainer}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Найти штат:"
-              onChangeText={(value: string) => this.setState({ search: value })}
-              value={search}
-            />
-          </View>
-
-        </View>
-      </SafeAreaView>
-    );
-  }
+interface VoiceMessagePlayer {
+  messageUrl: string;
 }
+
+const App = ({ messageUrl }): ReactElement => {
+  const [isPlaying, setPlaying] = useState(false);
+  const voice = new Sound(
+    require('./components/Playback/assets/12.aac'),
+    (error, sound) => {
+      console.log('sound => ', sound);
+      if (error) {
+        alert(`error${error.message}`);
+        return;
+      }
+      // voice.play(() => {
+      //   voice.release();
+      // });
+    },
+  );
+  //voice.play();
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Playback
+        index={1}
+        isMy={false}
+        isPlaying={isPlaying}
+        isMinified={false}
+        percent={50}
+        onPlayPressed={() => {
+          setPlaying(!isPlaying);
+          if (isPlaying) {
+            voice.play();
+          } else {
+            voice.stop();
+          }
+        }}
+      />
+    </SafeAreaView>
+  );
+};
 
 export default App;
