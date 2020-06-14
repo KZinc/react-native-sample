@@ -3,24 +3,6 @@ import React, { ReactElement } from 'react';
 import {
   Image, View, StyleSheet, ImageSourcePropType, TouchableOpacity,
 } from 'react-native';
-import Colors from '../../helpers/assets/Colors';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: Colors.mainBackground,
-    alignItems: 'center',
-  },
-  play: {
-    width: 30,
-    marginRight: 11,
-    height: 30,
-  },
-  wave: {
-    height: 22,
-  },
-});
 
 // const index = {
 //   0: 'розовая',
@@ -60,9 +42,9 @@ const iconsRequire: IconsRequireTypes = {
 
 interface IconsRequireTypes {
   pause: {
-    pauseGold:string;
-    pauseGrey:string;
-    pausePink:string;
+    pauseGold: string;
+    pauseGrey: string;
+    pausePink: string;
     pauseWhite: string;
   },
   play: {
@@ -75,32 +57,60 @@ interface IconsRequireTypes {
     waveGold: string;
     waveGrey: string;
     wavePink: string;
-    waveWhite:string;
+    waveWhite: string;
   }
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  play: {
+    width: 28,
+    marginRight: 5,
+    height: 28,
+  },
+  waveContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  wave: {
+    width: '100%',
+  },
+});
+
 const Playback = ({
-  isMy, index, isPlaying, isMinified, percent, onPlayPressed,
-}: PlaybackProps): ReactElement => {
+                    isMy, index, isMinified, isPlaying, percent, onPlayPressed,
+                  }: PlaybackProps): ReactElement => {
   const getIcon = (type: keyof IconsRequireTypes): ImageSourcePropType => {
     if (isMinified || (isMy && index !== 1)) return iconsRequire[type][`${type}White`];
     if (isMy && index === 1) return iconsRequire[type][`${type}Grey`];
     if (!isMy && index === 2) return iconsRequire[type][`${type}Gold`];
     return iconsRequire[type][`${type}Pink`];
   };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => onPlayPressed()}>
         <Image
           source={getIcon(isPlaying ? 'pause' : 'play')}
+          resizeMode="contain"
           style={styles.play}
         />
       </TouchableOpacity>
-      <Image
-        source={getIcon('wave')}
-        style={{ ...styles.wave, width: 230 * (percent * 0.01) }}
-      />
+      {percent > 0
+        ? (
+          <View style={styles.waveContainer}>
+            <Image
+              source={getIcon('wave')}
+              resizeMode="contain"
+              style={styles.wave}
+            />
+            <View style={{ width: `${100 - percent}%`, marginLeft: 'auto', height: 20, opacity: 0 }} />
+          </View>
+        )
+        : <View />}
     </View>
   );
 };

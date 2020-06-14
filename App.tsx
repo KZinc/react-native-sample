@@ -1,58 +1,36 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import {
   StyleSheet,
-  SafeAreaView,
+  SafeAreaView, Image, View,
 } from 'react-native';
-import Sound from 'react-native-sound';
-import Playback from './components/Playback/Playback';
+import PlayRecord from './components/PlayRecord/PlayRecord';
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexGrow: 0,
+    minHeight: 160,
+    width: 286,
+    marginHorizontal: 50,
+    marginVertical: 100,
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 1,
+    backgroundColor: '#aeaeae',
   },
 });
 
-interface VoiceMessagePlayer {
-  messageUrl: string;
-}
-
-const App = ({ messageUrl }): ReactElement => {
-  const [isPlaying, setPlaying] = useState(false);
-  const voice = new Sound(
-    require('./components/Playback/assets/12.aac'),
-    (error, sound) => {
-      console.log('sound => ', sound);
-      if (error) {
-        alert(`error${error.message}`);
-        return;
-      }
-      // voice.play(() => {
-      //   voice.release();
-      // });
-    },
-  );
-  //voice.play();
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Playback
-        index={1}
-        isMy={false}
-        isPlaying={isPlaying}
-        isMinified={false}
-        percent={50}
-        onPlayPressed={() => {
-          setPlaying(!isPlaying);
-          if (isPlaying) {
-            voice.play();
-          } else {
-            voice.stop();
-          }
-        }}
-      />
-    </SafeAreaView>
-  );
-};
+const App = (): ReactElement => (
+  <SafeAreaView style={styles.container}>
+    {/* eslint-disable-next-line global-require */}
+    <View style={{height: 70}}>
+      <PlayRecord message={require('./components/Playback/assets/12.aac')} isMinified={false} />
+    </View>
+    <View style={{height: 70, marginTop: 'auto'}}>
+      <Image source={require('./example.png')} />
+    </View>
+  </SafeAreaView>
+);
 
 export default App;
