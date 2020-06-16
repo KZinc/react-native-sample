@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-color-literals,global-require */
 import React, { ReactElement } from 'react';
 import {
   StyleSheet,
@@ -10,7 +11,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexGrow: 0,
-    minHeight: 160,
+    minHeight: 120,
     width: 286,
     marginHorizontal: 50,
     marginVertical: 100,
@@ -23,12 +24,18 @@ const styles = StyleSheet.create({
 
 const App = (): ReactElement => (
   <SafeAreaView style={styles.container}>
-    {/* eslint-disable-next-line global-require */}
-    <View style={{height: 70}}>
-      <PlayRecord message={require('./components/Playback/assets/12.aac')} isMinified={false} />
+    <View style={{ height: 70 }}>
+      <PlayRecord
+        message={require('./components/Playback/assets/12.aac')}
+        isMinified={false}
+        isMy={false}
+        listened
+        backgroundColor="blue"
+        index={0}
+      />
     </View>
-    <View style={{height: 70, marginTop: 'auto'}}>
-      <Image source={require('./example.png')} />
+    <View style={{ height: 40, marginTop: 'auto', width: 255 }}>
+      <Image source={require('./example2.png')} />
     </View>
   </SafeAreaView>
 );

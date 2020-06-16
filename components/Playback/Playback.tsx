@@ -4,13 +4,8 @@ import {
   Image, View, StyleSheet, ImageSourcePropType, TouchableOpacity,
 } from 'react-native';
 
-// const index = {
-//   0: 'розовая',
-//   1: 'цветная',
-//   2: 'золотая',
-// };
-
 interface PlaybackProps {
+  backgroundColor: string;
   index: number;
   isMinified: boolean;
   isMy: boolean;
@@ -65,6 +60,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'center',
   },
   play: {
     width: 28,
@@ -79,10 +75,14 @@ const styles = StyleSheet.create({
   wave: {
     width: '100%',
   },
+  coverView: {
+    marginLeft: 'auto',
+    height: '100%',
+  },
 });
 
 const Playback = ({
-                    isMy, index, isMinified, isPlaying, percent, onPlayPressed,
+                    isMy, index, isMinified, isPlaying, percent, onPlayPressed, backgroundColor
                   }: PlaybackProps): ReactElement => {
   const getIcon = (type: keyof IconsRequireTypes): ImageSourcePropType => {
     if (isMinified || (isMy && index !== 1)) return iconsRequire[type][`${type}White`];
@@ -107,7 +107,7 @@ const Playback = ({
               resizeMode="contain"
               style={styles.wave}
             />
-            <View style={{ width: `${100 - percent}%`, marginLeft: 'auto', height: 20, opacity: 0 }} />
+            <View style={{...styles.coverView, width: `${100 - percent}%`, backgroundColor }} />
           </View>
         )
         : <View />}

@@ -11,7 +11,7 @@ import Playback from '../Playback/Playback';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'blue',
+    backgroundColor: 'aqua',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 36,
   },
   dot: {
     backgroundColor: '#e1e1e1',
@@ -39,10 +38,12 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   counter: {
-    fontSize: 14,
+    minWidth: 20,
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   playbackContainer: {
-    width: '100%',
+    flex: 1,
     height: 28,
   },
 });
@@ -51,6 +52,10 @@ var voice: Sound;
 let timeout: number;
 let interval = 100;
 const play = (url: string, setCounter) => {
+  Sound.setActive(true);
+  Sound.setSpeakerphoneOn(true);
+  Sound.setCategory('Playback');
+  Sound.setMode('VoiceChat');
   voice = new Sound(url, (error) => {
     if (error) {
       console.log('Oh, trouble, trouble, disappointment (');
@@ -63,13 +68,14 @@ const play = (url: string, setCounter) => {
         setCounter(interval);
       }, 1000);
     }
-
   });
+
 };
 
 const stop = () => {
   if (voice) {
-    voice.stop(() => {});
+    voice.stop(() => {
+    });
   }
   if (timeout) {
     clearInterval(timeout);
@@ -78,7 +84,18 @@ const stop = () => {
   }
 };
 
-const PlayRecord = ({ message, isMinified }: { isMinified: boolean, message: string }): ReactElement => {
+interface PlayRecordProps {
+  backgroundColor: string;
+  index: 0 | 1 | 2;
+  isMinified: boolean;
+  isMy: boolean;
+  listened: boolean;
+  message: string;
+}
+
+const PlayRecord = ({
+  listened, message, isMinified, isMy, backgroundColor, index,
+}: PlayRecordProps): ReactElement => {
   const [trackLength, setTrackLength] = useState(1);
   const [counter, setCounter] = useState(trackLength);
   const [isPlaying, setPlaying] = useState(false);
@@ -112,19 +129,20 @@ const PlayRecord = ({ message, isMinified }: { isMinified: boolean, message: str
   const percent = isPlaying ? (Math.round((counter / trackLength) * 100) - 100) * -1 : 100;
   return (
     <SafeAreaView style={isMinified ? styles.container : styles.containerBig}>
-      <View style={styles.playbackContainer}>
+      <View style={{ ...styles.playbackContainer, flexBasis: isMinified ? '80%' : '100%' }}>
         <Playback
-          index={2}
-          isMy={true}
+          index={index}
+          isMy={isMy}
           isPlaying={isPlaying}
           isMinified={isMinified}
           percent={percent}
+          backgroundColor={backgroundColor}
           onPlayPressed={() => setPlaying(!isPlaying)}
         />
       </View>
-      <View style={styles.counterContainer}>
+      <View style={{ ...styles.counterContainer, paddingLeft: isMinified ? 10 : 36 }}>
         {
-          isMinified ? null : <View style={styles.dot} />
+          isMinified || listened ? null : <View style={styles.dot} />
         }
         <Text style={{ ...styles.counter, color: '#e1e1e1' }}>{formatNumToSeconds(counter)}</Text>
       </View>
