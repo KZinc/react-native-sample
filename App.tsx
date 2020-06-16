@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexGrow: 0,
-    minHeight: 120,
+    minHeight: 220,
     width: 286,
     marginHorizontal: 50,
     marginVertical: 100,

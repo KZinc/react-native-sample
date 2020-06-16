@@ -77,12 +77,12 @@ const styles = StyleSheet.create({
   },
   coverView: {
     marginLeft: 'auto',
-    height: '100%',
+    height: 20,
   },
 });
 
 const Playback = ({
-                    isMy, index, isMinified, isPlaying, percent, onPlayPressed, backgroundColor
+                    isMy, index, isMinified, isPlaying, percent, onPlayPressed, backgroundColor,
                   }: PlaybackProps): ReactElement => {
   const getIcon = (type: keyof IconsRequireTypes): ImageSourcePropType => {
     if (isMinified || (isMy && index !== 1)) return iconsRequire[type][`${type}White`];
@@ -107,7 +107,7 @@ const Playback = ({
               resizeMode="contain"
               style={styles.wave}
             />
-            <View style={{...styles.coverView, width: `${100 - percent}%`, backgroundColor }} />
+            <View style={{ ...styles.coverView, width: `${100 - percent}%`, backgroundColor }} />
           </View>
         )
         : <View />}

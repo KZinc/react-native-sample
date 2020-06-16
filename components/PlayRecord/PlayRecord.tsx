@@ -38,7 +38,9 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   counter: {
-    minWidth: 20,
+    flex: 1,
+    minWidth: 50,
+    flexShrink: 0,
     fontSize: 15,
     fontWeight: 'bold',
   },
@@ -47,29 +49,22 @@ const styles = StyleSheet.create({
     height: 28,
   },
 });
-
-var voice: Sound;
+let voice: Sound;
 let timeout: number;
-let interval = 100;
 const play = (url: string, setCounter) => {
-  Sound.setActive(true);
-  Sound.setSpeakerphoneOn(true);
-  Sound.setCategory('Playback');
-  Sound.setMode('VoiceChat');
   voice = new Sound(url, (error) => {
     if (error) {
       console.log('Oh, trouble, trouble, disappointment (');
     }
-    interval = Math.round(voice.getDuration());
     voice.play(() => voice.release());
     if (!timeout) {
       timeout = setInterval(() => {
-        interval--;
-        setCounter(interval);
-      }, 1000);
+        voice.getCurrentTime((pos) => {
+          setCounter(Math.round((voice.getDuration() - pos) * 10));
+        });
+      }, 500);
     }
   });
-
 };
 
 const stop = () => {
@@ -80,7 +75,6 @@ const stop = () => {
   if (timeout) {
     clearInterval(timeout);
     timeout = undefined;
-    interval = Math.round(voice.getDuration());
   }
 };
 
@@ -122,11 +116,11 @@ const PlayRecord = ({
       }
       const duration = Math.round(init.getDuration());
       setTrackLength(duration);
-      setCounter(duration);
+      setCounter(duration * 10);
     });
     return () => clearInterval(timeout);
   }, [message]);
-  const percent = isPlaying ? (Math.round((counter / trackLength) * 100) - 100) * -1 : 100;
+  const percent = isPlaying ? (Math.round((counter / (trackLength * 10)) * 100) - 100) * -1 : 100;
   return (
     <SafeAreaView style={isMinified ? styles.container : styles.containerBig}>
       <View style={{ ...styles.playbackContainer, flexBasis: isMinified ? '80%' : '100%' }}>
@@ -144,7 +138,7 @@ const PlayRecord = ({
         {
           isMinified || listened ? null : <View style={styles.dot} />
         }
-        <Text style={{ ...styles.counter, color: '#e1e1e1' }}>{formatNumToSeconds(counter)}</Text>
+        <Text style={{ ...styles.counter, color: '#e1e1e1' }} numberOfLines={1}>{formatNumToSeconds(Math.round(counter / 10))}</Text>
       </View>
     </SafeAreaView>
   );
