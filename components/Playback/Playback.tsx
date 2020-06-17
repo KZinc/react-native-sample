@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   coverView: {
     marginLeft: 'auto',
-    height: 20,
+    height: 30,
   },
 });
 

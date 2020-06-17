@@ -1,4 +1,4 @@
-/* eslint-disable global-require,@typescript-eslint/no-empty-function */
+/* eslint-disable react-native/no-color-literals,react-native/no-inline-styles */
 import React, { ReactElement, useEffect, useState } from 'react';
 import {
   StyleSheet,
@@ -49,34 +49,6 @@ const styles = StyleSheet.create({
     height: 28,
   },
 });
-let voice: Sound;
-let timeout: number;
-const play = (url: string, setCounter) => {
-  voice = new Sound(url, (error) => {
-    if (error) {
-      console.log('Oh, trouble, trouble, disappointment (');
-    }
-    voice.play(() => voice.release());
-    if (!timeout) {
-      timeout = setInterval(() => {
-        voice.getCurrentTime((pos) => {
-          setCounter(Math.round((voice.getDuration() - pos) * 10));
-        });
-      }, 500);
-    }
-  });
-};
-
-const stop = () => {
-  if (voice) {
-    voice.stop(() => {
-    });
-  }
-  if (timeout) {
-    clearInterval(timeout);
-    timeout = undefined;
-  }
-};
 
 interface PlayRecordProps {
   backgroundColor: string;
@@ -93,15 +65,39 @@ const PlayRecord = ({
   const [trackLength, setTrackLength] = useState(1);
   const [counter, setCounter] = useState(trackLength);
   const [isPlaying, setPlaying] = useState(false);
+  const [timeout, setTimeoutValue] = useState(0);
+  const [voice] = useState(
+    new Sound(message, () => {
+      if (!timeout) {
+        setTimeoutValue(setInterval(() => {
+          voice.getCurrentTime((pos) => {
+            setCounter(Math.floor((voice.getDuration() - pos) * 10));
+          });
+        }, 500));
+      }
+    }),
+  );
+
+  const play = (): void => {
+    voice.play(() => voice.release());
+  };
+
+  const stop = (): void => {
+    if (voice) voice.pause();
+    if (timeout) {
+      clearInterval(timeout);
+      setTimeoutValue(0);
+    }
+  };
+
 
   useEffect(() => {
     if (isPlaying) {
-      play(message, setCounter);
+      play();
     } else {
-      setCounter(trackLength);
       stop();
     }
-  }, [isPlaying]);
+  }, [isPlaying, message]);
 
   useEffect(() => {
     if (counter < 1) {
@@ -110,17 +106,16 @@ const PlayRecord = ({
   }, [counter]);
 
   useEffect(() => {
-    const init = new Sound(message, (error) => {
-      if (error) {
-        console.log('Oh, trouble, trouble, disappointment (');
-      }
+    const init = new Sound(message, () => {
       const duration = Math.round(init.getDuration());
       setTrackLength(duration);
       setCounter(duration * 10);
     });
-    return () => clearInterval(timeout);
+    return () => { if (timeout) clearInterval(timeout); };
   }, [message]);
-  const percent = isPlaying ? (Math.round((counter / (trackLength * 10)) * 100) - 100) * -1 : 100;
+
+  const percent = (Math.round((counter / (trackLength * 10)) * 100) - 100) * -1;
+
   return (
     <SafeAreaView style={isMinified ? styles.container : styles.containerBig}>
       <View style={{ ...styles.playbackContainer, flexBasis: isMinified ? '80%' : '100%' }}>
@@ -138,7 +133,11 @@ const PlayRecord = ({
         {
           isMinified || listened ? null : <View style={styles.dot} />
         }
-        <Text style={{ ...styles.counter, color: '#e1e1e1' }} numberOfLines={1}>{formatNumToSeconds(Math.round(counter / 10))}</Text>
+        <Text
+          style={{ ...styles.counter, color: '#e1e1e1' }}
+          numberOfLines={1}
+        >{formatNumToSeconds(Math.round(counter / 10))}
+        </Text>
       </View>
     </SafeAreaView>
   );
