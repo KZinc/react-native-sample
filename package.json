@@ -15,6 +15,7 @@
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-play-audio": "^0.1.2",
+    "react-native-proximity": "^3.0.0",
     "react-native-sound": "^0.11.0",
     "react-native-video": "^4.4.5"
   },
