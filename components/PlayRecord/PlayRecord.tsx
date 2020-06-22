@@ -5,14 +5,15 @@ import {
   SafeAreaView, Text, View,
 } from 'react-native';
 import Sound from 'react-native-sound';
+import EventEmitter from 'eventemitter3';
 import formatNumToSeconds from '../Playback/helpers/helpers';
 import Playback from '../Playback/Playback';
-import Proximity from 'react-native-proximity';
+
+const Emitter = new EventEmitter();
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'aqua',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -23,7 +24,6 @@ const styles = StyleSheet.create({
     paddingBottom: 7,
     flexDirection: 'column',
     justifyContent: 'center',
-    backgroundColor: 'blue',
     paddingHorizontal: 12,
   },
   counterContainer: {
@@ -53,22 +53,24 @@ const styles = StyleSheet.create({
 
 interface PlayRecordProps {
   backgroundColor: string;
+  id: string;
   index: 0 | 1 | 2;
   isMinified: boolean;
   isMy: boolean;
   listened: boolean;
   message: string;
+  soundCategory: 'Voice' | 'Playback'
 }
 
 const PlayRecord = ({
-  listened, message, isMinified, isMy, backgroundColor, index,
+  listened, message, isMinified, isMy, backgroundColor, index, id, soundCategory,
 }: PlayRecordProps): ReactElement => {
   const [trackLength, setTrackLength] = useState(1);
   const [counter, setCounter] = useState(trackLength);
   const [isPlaying, setPlaying] = useState(false);
   const [timeout, setTimeoutValue] = useState(0);
   const [isListened, setIsListened] = useState(false);
-  const [voice] = useState(
+  const [voice, setVoice] = useState(
     new Sound(message, () => {
       const duration = Math.round(voice.getDuration());
       if (duration !== trackLength) {
@@ -77,17 +79,6 @@ const PlayRecord = ({
       }
     }),
   );
-  // ACHTUNG DAS FIRED AN DIE JEDEN RENDER!!!!!!!!!
-  const proximityListener = ({ proximity }: {proximity: boolean}) => {
-    if (proximity) {
-      Sound.setCategory('Voice');
-    } else {
-      Sound.setCategory('Playback');
-    }
-  };
-
-  Proximity.addListener(proximityListener);
-
 
   const stop = (): void => {
     if (voice) voice.pause();
@@ -97,7 +88,16 @@ const PlayRecord = ({
     }
   };
 
+  const reset = (): void => {
+    setCounter(trackLength);
+    setIsListened(false);
+    setPlaying(false);
+    stop();
+    voice.setCurrentTime(0);
+  };
+
   const play = (): void => {
+    Emitter.emit('event', id);
     if (!timeout) {
       setTimeoutValue(setInterval(() => {
         voice.getCurrentTime((pos) => {
@@ -107,11 +107,7 @@ const PlayRecord = ({
     }
     setIsListened(true);
     voice.play(() => {
-      setCounter(trackLength);
-      setIsListened(false);
-      setPlaying(false);
-      stop();
-      voice.setCurrentTime(0);
+      reset();
     });
   };
 
@@ -124,11 +120,35 @@ const PlayRecord = ({
   }, [isPlaying, message]);
 
   useEffect(() => {
+    if (isPlaying) {
+      voice.getCurrentTime((position) => {
+        voice.release();
+        const newSound = new Sound(message, () => {
+          newSound.setCurrentTime(+position);
+          newSound.play();
+          setTimeoutValue(setInterval(() => {
+            newSound.getCurrentTime((pos) => {
+              setCounter(Math.floor(newSound.getDuration() - pos));
+            });
+          }, 500));
+        });
+        setVoice(newSound);
+      });
+    }
+  }, [soundCategory]);
+
+  useEffect(() => {
+    Emitter.on('event', (trackId) => {
+      if (trackId !== id) {
+        setPlaying(false);
+        stop();
+      }
+    });
     return () => {
       if (timeout) clearInterval(timeout);
       if (voice) voice.release();
     };
-  }, [message]);
+  }, []);
 
   const percent = isListened ? (Math.round((counter / trackLength) * 100) - 100) * -1 : 100;
 
