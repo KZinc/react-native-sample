@@ -23,6 +23,17 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
   },
+  hide: {
+    backgroundColor: 'black',
+    height: '100%',
+    width: '100%',
+  },
+  showContainer: {
+    flex: 1,
+  },
+  hideContainer: {
+    display: 'none',
+  },
 });
 
 const App = (): ReactElement => {
@@ -46,31 +57,34 @@ const App = (): ReactElement => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={{ height: 70 }}>
-        <PlayRecord
-          message={require('./components/Playback/assets/kiss.aac')}
-          id="zita"
-          soundCategory={soundCategory as 'Playback'|'Voice'}
-          isMinified={false}
-          isMy={false}
-          listened
-          backgroundColor="white"
-          index={0}
-        />
+    <SafeAreaView style={soundCategory === 'Playback' ? styles.container : styles.hide}>
+      <View style={soundCategory === 'Playback' ? styles.showContainer : styles.hideContainer}>
+        <View style={{ height: 70 }}>
+          <PlayRecord
+            message={require('./components/Playback/assets/kiss.aac')}
+            id="zita"
+            soundCategory={soundCategory as 'Playback'|'Voice'}
+            isMinified={false}
+            isMy={false}
+            listened
+            backgroundColor="white"
+            index={0}
+          />
+        </View>
+        <View style={{ height: 70 }}>
+          <PlayRecord
+            message={require('./components/Playback/assets/14.aac')}
+            isMinified={false}
+            id="gita"
+            soundCategory={soundCategory as 'Playback'|'Voice'}
+            isMy={false}
+            listened
+            backgroundColor="white"
+            index={0}
+          />
+        </View>
       </View>
-      <View style={{ height: 70 }}>
-        <PlayRecord
-          message={require('./components/Playback/assets/14.aac')}
-          isMinified={false}
-          id="gita"
-          soundCategory={soundCategory as 'Playback'|'Voice'}
-          isMy={false}
-          listened
-          backgroundColor="white"
-          index={0}
-        />
-      </View>
+
     </SafeAreaView>
   );
 };
