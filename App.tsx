@@ -6,6 +6,7 @@ import {
   View,
 } from 'react-native';
 import Proximity from 'react-native-proximity';
+import ScreenBrightness from 'react-native-screen-brightness';
 import Sound from 'react-native-sound';
 import PlayRecord from './components/PlayRecord/PlayRecord';
 
@@ -38,22 +39,32 @@ const styles = StyleSheet.create({
 
 const App = (): ReactElement => {
   const [soundCategory, setSoundCategory] = useState('Playback');
+  const [basicBrightness, setBasicBrightness] = useState(0);
 
-  const proximityListener = ({ proximity }: { proximity: boolean }) => {
+  const proximityListener = ({ proximity }: { proximity: boolean }): void => {
     if (proximity) {
       Sound.setCategory('Voice');
       setSoundCategory('Voice');
+      ScreenBrightness.setBrightness(0);
     } else {
       Sound.setCategory('Playback');
       setSoundCategory('Playback');
+      if (basicBrightness > 0) ScreenBrightness.setBrightness(basicBrightness);
     }
   };
 
   useEffect(() => {
+    // положил сюда, потому что иначе базовое значение яркости для события не успевает сохраниться
     Proximity.addListener(proximityListener);
     return () => {
       if (proximityListener) Proximity.removeListener(proximityListener);
     };
+  }, [basicBrightness]);
+
+  useEffect(() => {
+    ScreenBrightness.getBrightness().then((brightness: number) => {
+      setBasicBrightness(brightness / 255);
+    });
   }, []);
 
   return (
@@ -63,7 +74,7 @@ const App = (): ReactElement => {
           <PlayRecord
             message={require('./components/Playback/assets/kiss.aac')}
             id="zita"
-            soundCategory={soundCategory as 'Playback'|'Voice'}
+            soundCategory={soundCategory as 'Playback' | 'Voice'}
             isMinified={false}
             isMy={false}
             listened
@@ -76,7 +87,7 @@ const App = (): ReactElement => {
             message={require('./components/Playback/assets/14.aac')}
             isMinified={false}
             id="gita"
-            soundCategory={soundCategory as 'Playback'|'Voice'}
+            soundCategory={soundCategory as 'Playback' | 'Voice'}
             isMy={false}
             listened
             backgroundColor="white"

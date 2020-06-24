@@ -33,6 +33,7 @@ module.exports = {
     "linebreak-style":[0],
     "react/jsx-one-expression-per-line": [0],
     "prettier/prettier": [0],
+    "react-hooks/exhaustive-deps": [0],
     "import/no-unresolved":[0],
     "import/extensions": [0],
     "react-native-a11y/has-accessibility-props": [0],
