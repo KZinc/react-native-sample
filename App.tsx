@@ -3,8 +3,9 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import Proximity from 'react-native-proximity';
 import Sound from 'react-native-sound';
-import PlayRecord from './components/PlayRecord/PlayRecord';
 import InCallManager from 'react-native-incall-manager';
+
+import PlayRecord from './components/PlayRecord/PlayRecord';
 
 const styles = StyleSheet.create({
   container: {
@@ -37,40 +38,37 @@ const App = (): ReactElement => {
   };
 
   useEffect(() => {
-    // положил сюда, потому что иначе базовое значение яркости для события не успевает сохраниться
     Proximity.addListener(proximityListener);
     return () => {
       if (proximityListener) Proximity.removeListener(proximityListener);
     };
-  }, [soundCategory]);
+  }, []);
 
   return (
-    <SafeAreaView style={soundCategory === 'Playback' ? styles.container : {}}>
-      <View style={soundCategory === 'Playback' ? styles.showContainer : {}}>
-        <View style={{ height: 70 }}>
-          <PlayRecord
-            message={require('./components/Playback/assets/kiss.aac')}
-            id="zita"
-            soundCategory={soundCategory as 'Playback' | 'Voice'}
-            isMinified={false}
-            isMy={false}
-            listened
-            backgroundColor="white"
-            index={0}
-          />
-        </View>
-        <View style={{ height: 70 }}>
-          <PlayRecord
-            message={require('./components/Playback/assets/14.aac')}
-            isMinified={false}
-            id="gita"
-            soundCategory={soundCategory as 'Playback' | 'Voice'}
-            isMy={false}
-            listened
-            backgroundColor="white"
-            index={0}
-          />
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={{ height: 70 }}>
+        <PlayRecord
+          message={require('./components/Playback/assets/kiss.aac')}
+          id="zita"
+          soundCategory={soundCategory as 'Playback' | 'Voice'}
+          isMinified={false}
+          isMy={false}
+          listened
+          backgroundColor="white"
+          index={0}
+        />
+      </View>
+      <View style={{ height: 70 }}>
+        <PlayRecord
+          message={require('./components/Playback/assets/14.aac')}
+          isMinified={false}
+          id="gita"
+          soundCategory={soundCategory as 'Playback' | 'Voice'}
+          isMy={false}
+          listened
+          backgroundColor="white"
+          index={0}
+        />
       </View>
     </SafeAreaView>
   );
