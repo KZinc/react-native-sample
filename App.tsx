@@ -1,14 +1,9 @@
 /* eslint-disable react-native/no-color-literals,global-require */
 import React, { ReactElement, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-} from 'react-native';
+import { StyleSheet, SafeAreaView, View } from 'react-native';
 import Proximity from 'react-native-proximity';
 import Sound from 'react-native-sound';
 import PlayRecord from './components/PlayRecord/PlayRecord';
-
 
 const styles = StyleSheet.create({
   container: {
@@ -51,7 +46,7 @@ const App = (): ReactElement => {
         <PlayRecord
           message={require('./components/Playback/assets/kiss.aac')}
           id="zita"
-          soundCategory={soundCategory as 'Playback'|'Voice'}
+          soundCategory={soundCategory as 'Playback' | 'Voice'}
           isMinified={false}
           isMy={false}
           listened
@@ -61,10 +56,11 @@ const App = (): ReactElement => {
       </View>
       <View style={{ height: 70 }}>
         <PlayRecord
-          message={require('./components/Playback/assets/14.aac')}
+          message={require('./components/Playback/assets/kiss.aac')}
+          // message={require('./components/Playback/assets/14.aac')}
           isMinified={false}
           id="gita"
-          soundCategory={soundCategory as 'Playback'|'Voice'}
+          soundCategory={soundCategory as 'Playback' | 'Voice'}
           isMy={false}
           listened
           backgroundColor="white"
