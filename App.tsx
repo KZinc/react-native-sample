@@ -10,7 +10,7 @@ import Sound from 'react-native-sound';
 import SystemSetting from 'react-native-system-setting';
 import PlayRecord from './components/PlayRecord/PlayRecord';
 
-
+SystemSetting.saveBrightness();
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -40,19 +40,23 @@ const styles = StyleSheet.create({
 const App = (): ReactElement => {
   const [soundCategory, setSoundCategory] = useState('Playback');
   const [basicBrightness, setBasicBrightness] = useState(0);
-  const setBrightness = (force: number): void => {
-    SystemSetting.setAppBrightness(force);
+  const setBrightness = (shine: boolean): void => {
+    if (shine) {
+      SystemSetting.setAppBrightness(SystemSetting.saveBrightnessVal);
+    } else {
+      SystemSetting.setAppBrightness(0);
+    }
   };
 
   const proximityListener = ({ proximity }: { proximity: boolean }): void => {
     if (proximity) {
       Sound.setCategory('Voice');
       setSoundCategory('Voice');
-      setBrightness(0);
+      setBrightness(false);
     } else {
       Sound.setCategory('Playback');
       setSoundCategory('Playback');
-      setBrightness(basicBrightness);
+      setBrightness(true);
     }
   };
 
@@ -63,6 +67,10 @@ const App = (): ReactElement => {
       if (proximityListener) Proximity.removeListener(proximityListener);
     };
   }, [basicBrightness]);
+
+  useEffect(() => {
+    SystemSetting.saveBrightness();
+  },[]);
 
   useEffect(() => {
     SystemSetting.getAppBrightness().then((brightness: number) => {
