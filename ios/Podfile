@@ -83,6 +83,8 @@ target 'coronaApp' do
 
   pod 'RNPlayAudio', :path => '../node_modules/react-native-play-audio'
 
+  pod 'react-native-screen-brightness', :path => '../node_modules/react-native-screen-brightness'
+
   target 'coronaAppTests' do
     inherit! :complete
     # Pods for testing

@@ -6,8 +6,8 @@ import {
   View,
 } from 'react-native';
 import Proximity from 'react-native-proximity';
-import ScreenBrightness from 'react-native-screen-brightness';
 import Sound from 'react-native-sound';
+import SystemSetting from 'react-native-system-setting';
 import PlayRecord from './components/PlayRecord/PlayRecord';
 
 
@@ -40,16 +40,19 @@ const styles = StyleSheet.create({
 const App = (): ReactElement => {
   const [soundCategory, setSoundCategory] = useState('Playback');
   const [basicBrightness, setBasicBrightness] = useState(0);
+  const setBrightness = (force: number): void => {
+    SystemSetting.setAppBrightness(force);
+  };
 
   const proximityListener = ({ proximity }: { proximity: boolean }): void => {
     if (proximity) {
       Sound.setCategory('Voice');
       setSoundCategory('Voice');
-      ScreenBrightness.setBrightness(0);
+      setBrightness(0);
     } else {
       Sound.setCategory('Playback');
       setSoundCategory('Playback');
-      if (basicBrightness > 0) ScreenBrightness.setBrightness(basicBrightness);
+      setBrightness(basicBrightness);
     }
   };
 
@@ -62,10 +65,10 @@ const App = (): ReactElement => {
   }, [basicBrightness]);
 
   useEffect(() => {
-    ScreenBrightness.getBrightness().then((brightness: number) => {
-      setBasicBrightness(brightness / 255);
+    SystemSetting.getAppBrightness().then((brightness: number) => {
+      if (brightness > 0) setBasicBrightness(brightness);
     });
-  }, []);
+  }, [soundCategory]);
 
   return (
     <SafeAreaView style={soundCategory === 'Playback' ? styles.container : styles.hide}>
@@ -95,7 +98,6 @@ const App = (): ReactElement => {
           />
         </View>
       </View>
-
     </SafeAreaView>
   );
 };
