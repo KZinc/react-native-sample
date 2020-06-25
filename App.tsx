@@ -2,9 +2,9 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { StyleSheet, SafeAreaView, View } from 'react-native';
 import Proximity from 'react-native-proximity';
-import ScreenBrightness from 'react-native-screen-brightness';
 import Sound from 'react-native-sound';
 import PlayRecord from './components/PlayRecord/PlayRecord';
+import InCallManager from 'react-native-incall-manager';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,32 +19,20 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
   },
-  hide: {
-    backgroundColor: 'black',
-    height: '100%',
-    width: '100%',
-  },
-  showContainer: {
-    flex: 1,
-  },
-  hideContainer: {
-    display: 'none',
-  },
 });
 
 const App = (): ReactElement => {
   const [soundCategory, setSoundCategory] = useState('Playback');
-  const [basicBrightness, setBasicBrightness] = useState(0);
 
   const proximityListener = ({ proximity }: { proximity: boolean }): void => {
     if (proximity) {
       Sound.setCategory('Voice');
       setSoundCategory('Voice');
-      ScreenBrightness.setBrightness(0);
+      InCallManager.turnScreenOff();
     } else {
       Sound.setCategory('Playback');
       setSoundCategory('Playback');
-      if (basicBrightness > 0) ScreenBrightness.setBrightness(basicBrightness);
+      InCallManager.turnScreenOn();
     }
   };
 
@@ -54,17 +42,11 @@ const App = (): ReactElement => {
     return () => {
       if (proximityListener) Proximity.removeListener(proximityListener);
     };
-  }, [basicBrightness]);
-
-  useEffect(() => {
-    ScreenBrightness.getBrightness().then((brightness: number) => {
-      setBasicBrightness(brightness / 255);
-    });
-  }, []);
+  }, [soundCategory]);
 
   return (
-    <SafeAreaView style={soundCategory === 'Playback' ? styles.container : styles.hide}>
-      <View style={soundCategory === 'Playback' ? styles.showContainer : styles.hideContainer}>
+    <SafeAreaView style={soundCategory === 'Playback' ? styles.container : {}}>
+      <View style={soundCategory === 'Playback' ? styles.showContainer : {}}>
         <View style={{ height: 70 }}>
           <PlayRecord
             message={require('./components/Playback/assets/kiss.aac')}
@@ -90,7 +72,6 @@ const App = (): ReactElement => {
           />
         </View>
       </View>
-
     </SafeAreaView>
   );
 };
